@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<enunciate label="Aragog Services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://enunciate.codehaus.org/schemas/enunciate-1.19.xsd">
+    <api-import class="com.aragog.rest.resources.ItemResource" />
+    <services>
+        <rest defaultRestSubcontext="../service" />
+    </services>
+    <modules>
+        <docs title="Aragog"
+            splashPackage="com.aragog" />
+
+        <jersey usePathBasedConneg="false"
+              disableWildcardServletError="true"
+              disabled="true" />
+    </modules>
+</enunciate>

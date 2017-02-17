@@ -1,0 +1,85 @@
+<html>
+    <head>
+        <meta charset="UTF-8" content="text/html" http-equiv="content-type">
+        <meta content="IE=edge" http-equiv="X-UA-Compatible">
+        <meta content="none" name="msapplication-config">
+        <title>
+            Aragog
+        </title>
+        <link href="css/bootstrap.css" rel="stylesheet">
+        <link href="css/blue_steel.css" rel="stylesheet">
+        <link href="css/jquery-confirm.css" rel="stylesheet">
+
+        <script src="app/js/jquery.js"></script>
+        <script src="app/js/bootstrap3.js"></script>
+        <script src="app/js/jquery-confirm.js"></script>
+        <script src="app/aragog.js"></script>
+        </head>
+        <body class="has-sidebar vertical-nav responsive">
+        </body>
+        	<header role="banner">
+                <h1>
+                    <a href="landing.html" title="Aragog Praser"><b>Aragog</b> Praser</a>
+                </h1>
+                <ul class="banner-controls">
+                    <li class="dropdown">
+                        <span data-toggle="dropdown" class="user-info"></span>
+                        <span class="caret"></span>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <li> <a id="idpLogoutUrl" href="index.html"> <i class="fa fa-sign-out"></i> Logout </a> </li>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </header>
+
+            <div class="col-md-11">
+	            <form class="form-horizontal" role="form" id="searchItemForm" style="margin: 2%;">
+                  <div class="form-group">
+                  	<div class="col-md-3">
+                        <div class="input-group" id="searchItemTitle" name="searchItemTitle" data-toggle="tooltip" >
+                            <input name="itemTitleSearch" id="itemTitleSearch" class="form-control input-sm" placeholder="Item Title" title="Item Title">
+                            <span class="input-group-addon" ><i class="glyphicon glyphicon-search" ></i></span>
+                        </div>
+                    </div>
+             		<div class="col-md-2">
+                      <button type="button" class="btn btn-primary" id="executeItemSearch" onclick="searchItem()">Search</button>
+                       <button type="button" id="clearSearch" class="btn btn-secondary" onclick="clearItemSearch(false)">Clear</button>
+                    </div>
+                  </div>
+            
+                  <!-- Item Search Results Block Begins -->
+                  <h3 class="item-description search-results-count"><b>Search Results: </b></h3>
+                  <div class="item-block item_association" id="itemSearchBlock">
+                       <div class="row">
+                           <div class="col-md-6 table-responsive">
+                               <table class="table table-condensed table-hover" id="itemSearchResultsTable" name="itemSearchResultsTable">
+                                   <thead id = "itemTableHeader" class="table-header">
+                                           <td data-thread-details="true" data-referral-selector="true" data-grid-view-comfort="true" class="col-md-3">
+                                               Title
+                                           </td>
+                                           <td data-thread-details="true" data-referral-selector="true" data-grid-view-comfort="true" class="col-md-3">
+                                               Price
+                                           </td>
+                                   </thead>
+                                   <tbody id="itemBody" name="itemBody" class="item-tbody hidden">
+                                       <tr>
+                                          <td data-thread-details="true" data-referral-selector="true" data-grid-view-comfort="true" >
+                                               <span id="resultItemTitle" name="resultItemTitleName"></span>
+                                           </td>
+                                           <td data-thread-details="true" data-referral-selector="true" data-grid-view-comfort="true">
+                                               <span id="resultItemPriceName" name="resultItemPriceName"></span>
+                                           </td> 
+                                       </tr>
+                                   </tbody>
+                               </table>
+                               <h6 class="hidden item-results-message"></h6>
+                           </div>
+                       </div>
+                  </div>
+                  <!-- Item Search Results Block Ends -->
+              </form>
+	            
+            </div>
+        </body>

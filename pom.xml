@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.aragog</groupId>
+    <artifactId>aragog-tomcat-war</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
+	<name>Aragog Enterprise Appliance</name>
+    <description>Web Application assembly for the Aragog Web services.</description>
+   	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <compileSource>1.6</compileSource>
+        <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+        <buildTimestamp>${maven.build.timestamp}</buildTimestamp>
+	    <webXmlPath>src/main/webapp/WEB-INF/web.xml</webXmlPath>
+	    <webResourcePath>src/main/resources</webResourcePath> 
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-release-plugin</artifactId>
+              <version>2.4.1</version>
+              <dependencies>
+                <dependency>
+                    <groupId>org.apache.maven.scm</groupId>
+                    <artifactId>maven-scm-api</artifactId>
+                    <version>1.9.1</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.maven.scm</groupId>
+                    <artifactId>maven-scm-provider-gitexe</artifactId>
+                    <version>1.9.1</version>
+                </dependency>
+              </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+                	<webXml>${webXmlPath}</webXml>
+				    <webResources>
+				    	<resource>
+				    		<directory>${webResourcePath}</directory>
+				    	</resource>
+				    </webResources>         
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <validationSets>
+                        <validationSet>
+                            <dir>src/main/webapp/WEB-INF</dir>
+                            <systemId />
+                            <includes>
+                                <include>web.xml</include>
+                            </includes>
+                        </validationSet>
+                    </validationSets>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.enunciate</groupId>
+                <artifactId>maven-enunciate-plugin</artifactId>
+                <version>1.29</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>docs</goal>
+                        </goals>
+                        <configuration>
+                            <configFile>${basedir}/src/main/resources/enunciate/enunciate.xml</configFile>
+               				<docsSubdir>enunciate</docsSubdir>   
+							<indexPageName>index.html</indexPageName>          
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.enunciate</groupId>
+                        <artifactId>enunciate-rt</artifactId>
+                        <version>1.29</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- TODO: Need to figure out why this singles out Google libraries.  Others are being explicitly included. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <rules>
+                        <requireJavaVersion>
+                            <version>[1.5,1.8)</version>
+                        </requireJavaVersion>
+                        <requireMavenVersion>
+                            <version>[2.1.0,4.0)</version>
+                        </requireMavenVersion>
+                        <!-- TODO: This might help us get more consistent dependency
+                        resolution by causing a failure whenever we have multiple versions of the
+                        same artifact resolved. However, the number of errors is somewhat staggering
+                        so postponing -->
+                        <!-- <dependencyConvergence /> -->
+                    </rules>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>block-google-collections</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <!-- Since we use guava, a superset of google collections,
+                                        if google-collections makes it into the assembly and gets loaded instead
+                                        of guava it would be a problem -->
+                                        <exclude>*:google-collections:*</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!-- TODO: This dependency has implications depending on which container it's run in. Java EE 5 and Java EE 6.  Need to
+            identify which version is applicable and set accordingly -->
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+	      <groupId>com.aragog</groupId>
+          <artifactId>aragog-rest</artifactId>
+	      <scope>compile</scope>
+	      <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.jms</groupId>
+                    <artifactId>jms</artifactId>
+                </exclusion>
+            </exclusions>
+	      <classifier>sources</classifier>
+	      <optional>true</optional>
+	    </dependency>
+        <dependency>
+            <groupId>com.aragog</groupId>
+            <artifactId>aragog-rest</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.jms</groupId>
+                    <artifactId>jms</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        
+        <!-- misc 3rd party dependencies -->
+        <dependency>
+            <groupId>antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>2.7.6</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>2.1_3</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <scope>runtime</scope>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>concurrent</groupId>
+            <artifactId>concurrent</artifactId>
+            <scope>runtime</scope>
+            <version>1.3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>10.0</version><!-- TODO: verify version rest project had r08, war had 10.0 -->
+        </dependency>
+        <dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>1.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+        <dependency><!-- TODO: verify!!! -->
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <scope>compile</scope>
+            <version>1.7.5</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <!-- <profiles>
+        <profile>
+            <id>tomcat</id>
+            <properties>
+                <profileId>tomcat</profileId>
+			    <webXmlPath>src/main/dev-resources/web.xml</webXmlPath>
+			   	<webResourcePath>src/main/dev-resources/configuration</webResourcePath>
+			   	<customArtifactId>aragog-tomcat-edition</customArtifactId>
+				<customProjectName>Aragog Enterprise Appliance - Tomcat Edition</customProjectName>
+            </properties>
+            <dependencies>
+            	<dependency>
+            	    <groupId>com.oracle</groupId>
+                    <artifactId>ojdbc5</artifactId>
+                    <version>11.2.0.3</version>
+            	</dependency>
+            	<dependency>
+            	    <groupId>javax.persistence</groupId>
+                    <artifactId>persistence-api</artifactId>
+                    <version>1.0</version>
+            	</dependency>
+            	<dependency>
+                    <groupId>javax.jms</groupId>
+                    <artifactId>jms</artifactId>
+					<version>1.1</version>
+            	</dependency>
+            </dependencies>
+        </profile>
+    </profiles> -->
+
+</project>
+
+
